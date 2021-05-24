@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,26 +12,22 @@ import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from 'axios';
 
-function Copyright() {
-	return (
-		<Typography variant="body2" color="textSecondary" align="center">
-			{"Copyright © "}
-			<Link color="inherit" href="https://material-ui.com/">
-				limatgans
-			</Link>{" "}
-			{new Date().getFullYear()}
-			{"."}
-		</Typography>
-	);
-}
+// Components
+import Copyright from "../components/Copyright";
 
+// Config
+import { BACKEND_URL } from "../../config";
+
+// Styles
 const useStyles = makeStyles(theme => ({
 	root: {
 		height: "100vh",
 	},
 	image: {
-		backgroundImage: "url(https://source.unsplash.com/random)",
+		backgroundImage:
+			"url(https://images.unsplash.com/photo-1454165804606-c3d57bc86b40)",
 		backgroundRepeat: "no-repeat",
 		backgroundColor:
 			theme.palette.type === "light"
@@ -61,6 +57,27 @@ const useStyles = makeStyles(theme => ({
 
 export default function Login() {
 	const classes = useStyles();
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	const handleEmailChange = e => setEmail(e.target.value);
+	const handlePasswordChange = e => setPassword(e.target.value);
+
+	const handleLogin = async e => {
+		if (email === "" || password === "") {
+			return alert("Please fill all login details");
+		}
+
+		try {
+			await axios.post(`${BACKEND_URL}/api/user/login`, {
+				email,
+				password,
+			});
+		} catch (err) {
+			console.log(err);
+			alert("Error in Login - Please try again");
+		}
+	};
 
 	return (
 		<Grid container component="main" className={classes.root}>
@@ -85,6 +102,8 @@ export default function Login() {
 							name="email"
 							autoComplete="email"
 							autoFocus
+							value={email}
+							onChange={handleEmailChange}
 						/>
 						<TextField
 							variant="outlined"
@@ -96,17 +115,20 @@ export default function Login() {
 							type="password"
 							id="password"
 							autoComplete="current-password"
+							value={password}
+							onChange={handlePasswordChange}
 						/>
-						<FormControlLabel
+						{/* <FormControlLabel
 							control={<Checkbox value="remember" color="primary" />}
 							label="Remember me"
-						/>
+						/> */}
 						<Button
 							type="submit"
 							fullWidth
 							variant="contained"
 							color="primary"
-							className={classes.submit}>
+							className={classes.submit}
+							onClick={handleLogin}>
 							Sign In
 						</Button>
 						<Grid container>
@@ -116,7 +138,7 @@ export default function Login() {
 								</Link>
 							</Grid>
 							<Grid item>
-								<Link href="#" variant="body2">
+								<Link href="\signup" variant="body2">
 									{"Don't have an account? Sign Up"}
 								</Link>
 							</Grid>
